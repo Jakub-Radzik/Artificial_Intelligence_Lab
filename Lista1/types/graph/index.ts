@@ -1,20 +1,19 @@
 export type GraphNode = {
   stopId: string;
   stopName: string;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
   outgoingEdges: GraphEdge[];
 };
 
 export type GraphEdge = {
-  startNodeId: string;
-  endNodeId: string;
+  startNode: GraphNode;
+  endNode: GraphNode;
   lineName: string;
   departureTime: string;
   arrivalTime: string;
-  startNode?: GraphNode;
-  endNode?: GraphNode;
-  durationMinutes?: number; 
+  durationMinutes: number;
+  distance: number;
 };
 
 export type Graph = {

@@ -4,14 +4,13 @@
  */
 
 export default {
-
   clearMocks: true,
-  
+
   collectCoverage: true,
 
-  coverageDirectory: "coverage",
+  coverageDirectory: 'coverage',
 
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
 
   globals: {
     'ts-jest': {
@@ -22,15 +21,6 @@ export default {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  testMatch: [
-    '**/__tests__/**/*.test.ts',
-  ],
-  moduleFileExtensions: [
-    'ts',
-    'tsx',
-    'js',
-    'jsx',
-    'json',
-    'node',
-  ],
+  testMatch: ['**/__tests__/**/*.test.ts'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };
