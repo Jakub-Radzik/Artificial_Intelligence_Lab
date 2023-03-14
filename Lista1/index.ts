@@ -9,7 +9,7 @@ const main = async () => {
 
   const time1 = moment('15:00', 'HH:mm');
   const time2 = moment('15:01', 'HH:mm');
-  
+
   const diffInMinutes = time1.diff(time2, 'minutes');
   const nodeLesnica = graph.nodes['LEŚNICA'];
   const nodeWschowska = graph.nodes['FAT'];

@@ -3,7 +3,7 @@ import { manhattanDistance } from '../utils/distance';
 import { getMinutesDifference } from '../utils/time';
 
 // reverse is used to create nodes for the end of the edge
-const rowToNode = (row: CsvRow, reverse:boolean = false): GraphNode => {
+const rowToNode = (row: CsvRow, reverse: boolean = false): GraphNode => {
   if (reverse) {
     return {
       stopId: row.end_stop,
@@ -11,7 +11,7 @@ const rowToNode = (row: CsvRow, reverse:boolean = false): GraphNode => {
       latitude: parseFloat(row.end_stop_lat),
       longitude: parseFloat(row.end_stop_lon),
       outgoingEdges: [],
-    }
+    };
   }
 
   return {

@@ -12,12 +12,20 @@ type Distance = Record<
   }
 >;
 
-type ParentMap = Record<string, {
-  nodeName: string;
-  edge: GraphEdge
-}>;
+type ParentMap = Record<
+  string,
+  {
+    nodeName: string;
+    edge: GraphEdge;
+  }
+>;
 
-export const dijkstra = (graph: Graph, start: GraphNode, end: GraphNode, initialDepartureTime:string) => {
+export const dijkstra = (
+  graph: Graph,
+  start: GraphNode,
+  end: GraphNode,
+  initialDepartureTime: string
+) => {
   const parentMap: ParentMap = {};
   const startTime = moment(initialDepartureTime, 'HH:mm');
   let arrivalTimeToStop = moment(initialDepartureTime, 'HH:mm');
@@ -51,10 +59,7 @@ export const dijkstra = (graph: Graph, start: GraphNode, end: GraphNode, initial
   let isFirstIteration = true;
 
   while (unvisitedNodes.size > 0 && !endFound) {
-    const closestNodeName = findNodeWithClosestTime(
-      distances,
-      unvisitedNodes
-    );
+    const closestNodeName = findNodeWithClosestTime(distances, unvisitedNodes);
     if (closestNodeName) {
       // STEP 4: For the selected node, iterate over its outgoing edges and update
       // the distance to each neighboring node if the distance through
@@ -73,12 +78,15 @@ export const dijkstra = (graph: Graph, start: GraphNode, end: GraphNode, initial
         let departureTime = moment(edge.departureTime, 'HH:mm');
         let arrivalTime = moment(edge.arrivalTime, 'HH:mm');
 
-        if(departureTime.isBefore(arrivalTimeToStop)){
+        if (departureTime.isBefore(arrivalTimeToStop)) {
           departureTime.add(1, 'day');
           arrivalTime.add(1, 'day');
         }
 
-        const timeThroughNode = departureTime.diff(arrivalTimeToStop, 'minutes')  + closestNode.time+arrivalTime.diff(departureTime, 'minutes')
+        const timeThroughNode =
+          departureTime.diff(arrivalTimeToStop, 'minutes') +
+          closestNode.time +
+          arrivalTime.diff(departureTime, 'minutes');
 
         const distanceThroughNode = closestNode.distance + edge.distance;
 
@@ -91,7 +99,7 @@ export const dijkstra = (graph: Graph, start: GraphNode, end: GraphNode, initial
           //! here some way to remember edge
           parentMap[neighbor.node.stopId] = {
             nodeName: closestNode.node.stopId,
-            edge
+            edge,
           };
 
           // parentMap[neighbor.node.stopId] = closestNode.node.stopId;
@@ -99,7 +107,7 @@ export const dijkstra = (graph: Graph, start: GraphNode, end: GraphNode, initial
       });
       arrivalTimeToStop.subtract(closestNode.time, 'minutes');
 
-      // STEP 5: Once all neighboring nodes have been updated, 
+      // STEP 5: Once all neighboring nodes have been updated,
       // remove the selected node from the set of unvisited nodes.
 
       unvisitedNodes.delete(closestNodeName);
@@ -111,38 +119,42 @@ export const dijkstra = (graph: Graph, start: GraphNode, end: GraphNode, initial
     }
   }
 
-  // STEP 7: Once the destination node is visited, 
-  // the shortest path from the starting node 
-  // to the destination node can be reconstructed 
+  // STEP 7: Once the destination node is visited,
+  // the shortest path from the starting node
+  // to the destination node can be reconstructed
   // by backtracking from the destination node using the parent pointers.
 
   // construct path
-  const path: {node:GraphNode, edge?: GraphEdge}[] = [];
+  const path: { node: GraphNode; edge?: GraphEdge }[] = [];
   let currentNode = end;
   let edge = parentMap[end.stopId].edge;
   while (currentNode.stopId !== start.stopId) {
-    path.push({node: currentNode, edge});
+    path.push({ node: currentNode, edge });
     currentNode = graph.nodes[parentMap[currentNode.stopId].nodeName];
-    edge = parentMap[currentNode.stopId]?.edge
+    edge = parentMap[currentNode.stopId]?.edge;
   }
-  path.push({node:start});
+  path.push({ node: start });
 
-  path.reverse()
-  
-  console.log(`You want to go from ${start.stopName} to ${end.stopName} and you start at ${initialDepartureTime}`)
-  for(let i = 1; i < path.length; i++ ){
-    console.log(`${path[i].edge.startNode.stopName} (${path[i].edge.departureTime}) -> ${path[i].edge.endNode.stopName} (${path[i].edge.arrivalTime}) [LINE: ${path[i].edge.lineName}]`)
+  path.reverse();
+
+  console.log(
+    `You want to go from ${start.stopName} to ${end.stopName} and you start at ${initialDepartureTime}`
+  );
+  for (let i = 1; i < path.length; i++) {
+    console.log(
+      `${path[i].edge.startNode.stopName} (${path[i].edge.departureTime}) -> ${path[i].edge.endNode.stopName} (${path[i].edge.arrivalTime}) [LINE: ${path[i].edge.lineName}]`
+    );
   }
-  console.log(`COST: ${distances[end.stopId].time}`)
+  console.log(`COST: ${distances[end.stopId].time}`);
 
   return {
     path,
-  }
+  };
 };
 
 function findNodeWithClosestTime(
   distances: Distance,
-  unvisitedNodes: Set<string>,
+  unvisitedNodes: Set<string>
 ): string | null {
   let smallestTime = Infinity;
   let closestNode: string | null = null;
@@ -156,7 +168,6 @@ function findNodeWithClosestTime(
 
   return closestNode;
 }
-
 
 // we arrive at t1
 // we have to wait for t2 = cost(t1, node.departureTime) + node.duration

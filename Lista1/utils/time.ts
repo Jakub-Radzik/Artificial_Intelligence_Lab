@@ -13,8 +13,12 @@ export const getMinutesDifference = (time1: string, time2: string) => {
 
 export const calculateTimeCost = (time1: string, time2: string) => {
   // Convert time strings to Date objects
-  const date1 = new Date(`2023-03-14T${time1}${time1.length === 5 ? ':00' : ''}`);
-  const date2 = new Date(`2023-03-14T${time2}${time2.length === 5 ? ':00' : ''}`);
+  const date1 = new Date(
+    `2023-03-14T${time1}${time1.length === 5 ? ':00' : ''}`
+  );
+  const date2 = new Date(
+    `2023-03-14T${time2}${time2.length === 5 ? ':00' : ''}`
+  );
 
   // Check if the second time is on the next day
   const isNextDay = date2.getTime() < date1.getTime();
@@ -29,4 +33,4 @@ export const calculateTimeCost = (time1: string, time2: string) => {
   const differenceInMinutes = differenceInMilliseconds / 1000 / 60;
 
   return differenceInMinutes;
-}
+};
