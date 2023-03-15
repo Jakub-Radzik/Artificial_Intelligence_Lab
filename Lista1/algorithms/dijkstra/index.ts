@@ -1,24 +1,5 @@
-import { Graph, GraphEdge, GraphNode } from '../../types';
-import { calculateTimeCost } from '../../utils/time';
+import { Distance, Graph, GraphEdge, GraphNode, ParentMap } from '../../types';
 import * as moment from 'moment';
-import path = require('path');
-
-type Distance = Record<
-  string,
-  {
-    node: GraphNode;
-    distance: number;
-    time: number;
-  }
->;
-
-type ParentMap = Record<
-  string,
-  {
-    nodeName: string;
-    edge: GraphEdge;
-  }
->;
 
 export const dijkstra = (
   graph: Graph,
@@ -26,8 +7,11 @@ export const dijkstra = (
   end: GraphNode,
   initialDepartureTime: string
 ) => {
+  const timeOfStart = moment();
+
+  // Parent map is used to reconstruct the path
   const parentMap: ParentMap = {};
-  const startTime = moment(initialDepartureTime, 'HH:mm');
+
   let arrivalTimeToStop = moment(initialDepartureTime, 'HH:mm');
 
   // STEP 1: Initialize distances from start to all other nodes to infinity
@@ -61,6 +45,7 @@ export const dijkstra = (
   while (unvisitedNodes.size > 0 && !endFound) {
     const closestNodeName = findNodeWithClosestTime(distances, unvisitedNodes);
     if (closestNodeName) {
+      
       // STEP 4: For the selected node, iterate over its outgoing edges and update
       // the distance to each neighboring node if the distance through
       // the current node is shorter than the previously calculated distance.
@@ -96,13 +81,12 @@ export const dijkstra = (
             distance: distanceThroughNode,
             time: timeThroughNode,
           };
-          //! here some way to remember edge
+
           parentMap[neighbor.node.stopId] = {
             nodeName: closestNode.node.stopId,
             edge,
           };
 
-          // parentMap[neighbor.node.stopId] = closestNode.node.stopId;
         }
       });
       arrivalTimeToStop.subtract(closestNode.time, 'minutes');
@@ -118,6 +102,8 @@ export const dijkstra = (
       endFound = closestNodeName === end.stopId;
     }
   }
+
+  const timeOfCalculations = moment().diff(timeOfStart, 'milliseconds');
 
   // STEP 7: Once the destination node is visited,
   // the shortest path from the starting node
@@ -146,9 +132,11 @@ export const dijkstra = (
     );
   }
   console.log(`COST: ${distances[end.stopId].time}`);
+  console.log(`Time of calc: ${timeOfCalculations}ms`);
 
   return {
     path,
+    timeOfCalculations,
   };
 };
 

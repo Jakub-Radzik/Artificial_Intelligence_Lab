@@ -14,7 +14,7 @@ export const readCsv = async (path: string) => {
       .on('data', (row: CsvRow) => data.push(row))
       .on('end', () => {
         console.log(
-          `CSV file successfully processed in ${getTimeDifference(time)} s`
+          `CSV file successfully processed in ${getTimeDifference(time)} s\n`
         );
         resolve(data);
       })
