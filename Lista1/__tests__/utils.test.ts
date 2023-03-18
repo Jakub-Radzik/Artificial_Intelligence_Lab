@@ -1,6 +1,6 @@
 import { describe, test, expect } from '@jest/globals';
 import { GraphNode } from '../types';
-import { euclideanDistanceNodes } from '../utils/distance';
+import { euclideanDistanceNodes, manhattanDistanceNodes } from '../utils/distance';
 import { calculateTimeCost, getMinutesDifference } from '../utils/time';
 
 describe('Utils', () => {
@@ -56,7 +56,7 @@ describe('Utils', () => {
     });
   });
 
-  describe('distances', () => {
+  describe('distances euclidan', () => {
     // base on triangle with sides, 3, 4, 5
 
     // longitude is x
@@ -111,4 +111,60 @@ describe('Utils', () => {
     });
 
    })
+
+   describe('distances manhattan', () => {
+     // base on triangle with sides, 3, 4, 5
+ 
+     // longitude is x
+     // latitude is y
+ 
+     const testNode: GraphNode = {
+       stopId: '',
+       stopName: '',
+       latitude: 0,
+       longitude: 0,
+       outgoingEdges: []
+     }
+ 
+     test('Points in first Quater', () => {
+       const n1: GraphNode = {...testNode, longitude: 1, latitude: 1 };
+       const n2: GraphNode= {...testNode, longitude: 4, latitude: 5 };
+ 
+       const distance = manhattanDistanceNodes(n1, n2);
+       expect(distance).toBe(7);
+     });
+ 
+     test('Points in second Quater', () => {
+       const n1: GraphNode = {...testNode, longitude: -4, latitude: 1 };
+       const n2: GraphNode= {...testNode, longitude: -1, latitude: 5 };
+ 
+       const distance = manhattanDistanceNodes(n1, n2);
+       expect(distance).toBe(7);
+     });
+ 
+     test('Points in third Quater', () => {
+       const n1: GraphNode = {...testNode, longitude: -4, latitude: -5 };
+       const n2: GraphNode= {...testNode, longitude: -1, latitude: -1 };
+ 
+       const distance = manhattanDistanceNodes(n1, n2);
+       expect(distance).toBe(7);
+     });
+ 
+     test('Points in fourth Quater', () => {
+       const n1: GraphNode = {...testNode, longitude: 1, latitude: -5 };
+       const n2: GraphNode= {...testNode, longitude: 4, latitude: -1 };
+ 
+       const distance = manhattanDistanceNodes(n1, n2);
+       expect(distance).toBe(7);
+     });
+ 
+     test('Points in first and second Quater', () => {
+       const n1: GraphNode = {...testNode, longitude: 1, latitude: 1 };
+       const n2: GraphNode= {...testNode, longitude: -2, latitude: 5 };
+ 
+       const distance = manhattanDistanceNodes(n1, n2);
+       expect(distance).toBe(7);
+     });
+ 
+    })
 });
