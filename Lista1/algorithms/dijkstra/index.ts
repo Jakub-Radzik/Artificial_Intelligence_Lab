@@ -40,12 +40,10 @@ export const dijkstra = (
   // in the set and keeping track of the node with the smallest distance.
 
   let endFound = false;
-  let isFirstIteration = true;
 
   while (unvisitedNodes.size > 0 && !endFound) {
     const closestNodeName = findNodeWithClosestTime(distances, unvisitedNodes);
     if (closestNodeName) {
-      
       // STEP 4: For the selected node, iterate over its outgoing edges and update
       // the distance to each neighboring node if the distance through
       // the current node is shorter than the previously calculated distance.
@@ -86,7 +84,6 @@ export const dijkstra = (
             nodeName: closestNode.node.stopId,
             edge,
           };
-
         }
       });
       arrivalTimeToStop.subtract(closestNode.time, 'minutes');
@@ -95,7 +92,6 @@ export const dijkstra = (
       // remove the selected node from the set of unvisited nodes.
 
       unvisitedNodes.delete(closestNodeName);
-      isFirstIteration = false;
       // STEP 6: Repeat steps 3-5 until the destination node
       //  is visited or there are no more unvisited nodes.
 

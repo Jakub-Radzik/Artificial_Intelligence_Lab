@@ -10,7 +10,6 @@ const main = async () => {
   const nodeEnd = graph.nodes['FAT'];
 
   dijkstra(graph, nodeStart, nodeEnd, '15:00');
-
 };
 
 main();
