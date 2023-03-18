@@ -1,4 +1,5 @@
-import { dijkstra } from './algorithms/dijkstra';
+import { aStar } from './algorithms/a-star';
+// import { dijkstra } from './algorithms/dijkstra';
 import { createGraph } from './algorithms/graphCreator';
 import { readCsv } from './utils/csv';
 
@@ -9,7 +10,7 @@ const main = async () => {
   const nodeStart = graph.nodes['LEŚNICA'];
   const nodeEnd = graph.nodes['FAT'];
 
-  dijkstra(graph, nodeStart, nodeEnd, '15:00');
+  aStar(nodeStart, nodeEnd, '15:00');
 };
 
 main();

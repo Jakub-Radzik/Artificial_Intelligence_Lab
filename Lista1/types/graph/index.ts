@@ -4,6 +4,11 @@ export type GraphNode = {
   latitude: number;
   longitude: number;
   outgoingEdges: GraphEdge[];
+  g?: number;
+  h?: number;
+  f?: number;
+  cameFrom?: GraphNode;
+  cameUsing?: GraphEdge;
 };
 
 export type GraphEdge = {

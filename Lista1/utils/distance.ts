@@ -1,4 +1,4 @@
-import { GraphNode } from "../types";
+import { GraphNode } from '../types';
 
 export const manhattanDistance = (
   x1: number,
@@ -21,7 +21,8 @@ const euclideanDistance = (
 export const euclideanDistanceNodes = (
   node1: GraphNode,
   node2: GraphNode
-): number => euclideanDistance(
+): number =>
+  euclideanDistance(
     node1.longitude,
     node1.latitude,
     node2.longitude,
@@ -31,9 +32,10 @@ export const euclideanDistanceNodes = (
 export const manhattanDistanceNodes = (
   node1: GraphNode,
   node2: GraphNode
-): number =>  manhattanDistance(
+): number =>
+  manhattanDistance(
     node1.longitude,
     node1.latitude,
     node2.longitude,
     node2.latitude
-  );  
+  );

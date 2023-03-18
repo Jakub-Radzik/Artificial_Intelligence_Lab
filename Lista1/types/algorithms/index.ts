@@ -1,4 +1,4 @@
-import { GraphEdge, GraphNode } from "../graph";
+import { GraphEdge, GraphNode } from '../graph';
 
 //Used in dijkstra algo
 export type Distance = Record<
