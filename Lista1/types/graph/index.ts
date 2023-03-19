@@ -7,6 +7,7 @@ export type GraphNode = {
   g?: number;
   h?: number;
   f?: number;
+  currentDuration?: number;
   cameFrom?: GraphNode;
   cameUsing?: GraphEdge;
 };
