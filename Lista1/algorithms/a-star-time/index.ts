@@ -1,6 +1,7 @@
 import moment = require('moment');
 import { GraphEdge, GraphNode } from '../../types';
 import { distance } from '../../utils/distance';
+import { VEHICLE_VELOCITY } from '../constants';
 
 const f = (node: GraphNode) => node.g + node.h;
 
@@ -12,9 +13,7 @@ const h = (node: GraphNode, endNode: GraphNode) => {
     endNode.longitude
   ); // in km
 
-  const speed = 15; // km/h
-
-  const timeToEnd = distanceToEnd / speed; // in hours
+  const timeToEnd = distanceToEnd / VEHICLE_VELOCITY; // in hours
 
   const timeToEndInMinutes = timeToEnd * 60; // in minutes
 
@@ -53,7 +52,6 @@ export const aStar = (
     currentDuration: 0,
   };
   const endNode: GraphNode = { ...end };
-  //   const graphCopy: Graph = { ...graph };
 
   const open: GraphNode[] = [startNode];
   const closed: GraphNode[] = [];

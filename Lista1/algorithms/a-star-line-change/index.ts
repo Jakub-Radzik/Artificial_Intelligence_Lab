@@ -1,6 +1,7 @@
 import moment = require('moment');
 import { GraphEdge, GraphNode } from '../../types';
 import { distance } from '../../utils/distance';
+import { LINE_CHANGE_PENALTY } from '../constants';
 
 const f = (node: GraphNode) => node.g + node.h;
 
@@ -21,20 +22,29 @@ const h = (node: GraphNode, endNode: GraphNode) => {
   return timeToEndInMinutes;
 };
 
-const g = (edge: GraphEdge, arrivalTimeToStop: moment.Moment) => {
-  //   let departureTime = moment(edge.departureTime, 'HH:mm');
-  //   let arrivalTime = moment(edge.arrivalTime, 'HH:mm');
+const g = (startNode: GraphNode, edge: GraphEdge, arrivalTimeToStop: moment.Moment) => {
+    let departureTime = moment(edge.departureTime, 'HH:mm');
+    let arrivalTime = moment(edge.arrivalTime, 'HH:mm');
 
-  //   if (departureTime.isBefore(arrivalTimeToStop)) {
-  //     departureTime.add(1, 'day');
-  //     arrivalTime.add(1, 'day');
-  //   }
+    if (departureTime.isBefore(arrivalTimeToStop)) {
+      departureTime.add(1, 'day');
+      arrivalTime.add(1, 'day');
+    }
 
-  //   const timeThroughNode =
-  //     departureTime.diff(arrivalTimeToStop, 'minutes') +
-  //     arrivalTime.diff(departureTime, 'minutes');
+    const timeThroughNode =
+      departureTime.diff(arrivalTimeToStop, 'minutes') +
+      arrivalTime.diff(departureTime, 'minutes');
 
-  return 0;
+      let lineChangePenalty = 0;
+      try{
+        lineChangePenalty = edge.lineName !== startNode?.cameUsing.lineName ? LINE_CHANGE_PENALTY : 0;
+      }
+      catch(e){
+        lineChangePenalty += LINE_CHANGE_PENALTY;
+      }
+    
+
+  return timeThroughNode+lineChangePenalty;
 };
 
 export const aStar = (
@@ -53,7 +63,6 @@ export const aStar = (
     currentDuration: 0,
   };
   const endNode: GraphNode = { ...end };
-  //   const graphCopy: Graph = { ...graph };
 
   const open: GraphNode[] = [startNode];
   const closed: GraphNode[] = [];
@@ -110,7 +119,6 @@ export const aStar = (
 
     open.splice(open.indexOf(wezel), 1);
     closed.push(wezel);
-
     for (const edge of wezel.outgoingEdges) {
       const wezel_nastepny = edge.endNode;
       if (!open.includes(wezel_nastepny) && !closed.includes(wezel_nastepny)) {
@@ -121,11 +129,11 @@ export const aStar = (
         );
 
         wezel_nastepny.h = h(wezel, endNode);
-        wezel_nastepny.g = wezel.g + g(edge, arrivalTimeToStop);
+        wezel_nastepny.g = wezel.g + g(wezel, edge, arrivalTimeToStop);
         wezel_nastepny.f = wezel_nastepny.g + wezel_nastepny.h;
       } else {
-        if (wezel_nastepny.g > wezel.g + g(edge, arrivalTimeToStop)) {
-          wezel_nastepny.g = wezel.g + g(edge, arrivalTimeToStop);
+        if (wezel_nastepny.g > wezel.g + g(wezel, edge, arrivalTimeToStop)) {
+          wezel_nastepny.g = wezel.g + g(wezel, edge, arrivalTimeToStop);
           wezel_nastepny.f = wezel_nastepny.g + wezel_nastepny.h;
           wezel_nastepny.currentDuration = moment(
             edge.arrivalTime,
