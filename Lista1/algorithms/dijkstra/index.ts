@@ -133,6 +133,7 @@ export const dijkstra = (
   return {
     path,
     timeOfCalculations,
+    cost: distances[end.stopId].time,
   };
 };
 

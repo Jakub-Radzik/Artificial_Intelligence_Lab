@@ -2,47 +2,48 @@ import moment = require('moment');
 import { GraphEdge, GraphNode } from '../../types';
 import { distance } from '../../utils/distance';
 
+const f = (node: GraphNode) => node.g + node.h;
+
+const h = (node: GraphNode, endNode: GraphNode) => {
+  const distanceToEnd = distance(
+    node.latitude,
+    node.longitude,
+    endNode.latitude,
+    endNode.longitude
+  ); // in km
+
+  const speed = 15; // km/h
+
+  const timeToEnd = distanceToEnd / speed; // in hours
+
+  const timeToEndInMinutes = timeToEnd * 60; // in minutes
+
+  return timeToEndInMinutes;
+};
+
+const g = (edge: GraphEdge, arrivalTimeToStop: moment.Moment) => {
+  let departureTime = moment(edge.departureTime, 'HH:mm');
+  let arrivalTime = moment(edge.arrivalTime, 'HH:mm');
+
+  if (departureTime.isBefore(arrivalTimeToStop)) {
+    departureTime.add(1, 'day');
+    arrivalTime.add(1, 'day');
+  }
+
+  const timeThroughNode =
+    departureTime.diff(arrivalTimeToStop, 'minutes') +
+    arrivalTime.diff(departureTime, 'minutes');
+
+  return timeThroughNode;
+};
+
 export const aStar = (
   start: GraphNode,
   end: GraphNode,
-  initialDepartureTime: string,
+  initialDepartureTime: string
 ) => {
   const startMoment = moment();
   let arrivalTimeToStop = moment(initialDepartureTime, 'HH:mm');
-
-  const f = (node: GraphNode) => node.g + node.h;
-
-  const h = (node: GraphNode, endNode: GraphNode) => {
-    return distance(
-      node.latitude,
-      node.longitude,
-      endNode.latitude,
-      endNode.longitude
-    );
-  };
-
-  // pass startNode because in edge.StartNode g value is undefined
-  //   startNode.g = 0; // distance from start
-  const g = (edge: GraphEdge, arrivalTimeToStop: moment.Moment) => {
-    let departureTime = moment(edge.departureTime, 'HH:mm');
-    let arrivalTime = moment(edge.arrivalTime, 'HH:mm');
-
-    if (departureTime.isBefore(arrivalTimeToStop)) {
-      departureTime.add(1, 'day');
-      arrivalTime.add(1, 'day');
-    }
-
-    // time between our arrival to stop and departure from stop
-    // duration of the edge
-    // const a = departureTime.diff(arrivalTimeToStop, 'minutes')
-    // const c = arrivalTime.diff(departureTime, 'minutes');
-
-    const timeThroughNode =
-      departureTime.diff(arrivalTimeToStop, 'minutes') +
-      arrivalTime.diff(departureTime, 'minutes');
-
-    return timeThroughNode;
-  };
 
   const startNode: GraphNode = {
     ...start,
@@ -71,7 +72,11 @@ export const aStar = (
     }
 
     // here add minutes we spent on the edge
-    arrivalTimeToStop.add(wezel.currentDuration || 0, 'minutes');
+    try {
+      arrivalTimeToStop.add(wezel.currentDuration || 0, 'minutes');
+    } catch (e) {
+      console.error('error', e);
+    }
 
     if (wezel.stopId === endNode.stopId) {
       const timeOfCalculations = moment().diff(startMoment, 'milliseconds');
@@ -100,7 +105,7 @@ export const aStar = (
       console.log(`COST: ${end.f}`);
       console.log(`Time of calc: ${timeOfCalculations}ms`);
 
-      return { path };
+      return { path, cost: end.f, timeOfCalculations };
     }
 
     open.splice(open.indexOf(wezel), 1);

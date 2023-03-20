@@ -61,7 +61,7 @@ export function distance(
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   const d = R * c;
-  return parseFloat((d / 100).toFixed(3));
+  return parseFloat((d / 1000).toFixed(3));
 }
 
 function toRadians(degrees: number): number {
