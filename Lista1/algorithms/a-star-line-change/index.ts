@@ -1,7 +1,7 @@
 import moment = require('moment');
 import { GraphEdge, GraphNode } from '../../types';
 import { distance } from '../../utils/distance';
-import { LINE_CHANGE_PENALTY } from '../constants';
+import { LINE_CHANGE_PENALTY, VEHICLE_VELOCITY } from '../constants';
 
 const f = (node: GraphNode) => node.g + node.h;
 
@@ -13,38 +13,24 @@ const h = (node: GraphNode, endNode: GraphNode) => {
     endNode.longitude
   ); // in km
 
-  const speed = 15; // km/h
-
-  const timeToEnd = distanceToEnd / speed; // in hours
+  const timeToEnd = distanceToEnd / VEHICLE_VELOCITY; // in hours
 
   const timeToEndInMinutes = timeToEnd * 60; // in minutes
 
   return timeToEndInMinutes;
 };
 
-const g = (startNode: GraphNode, edge: GraphEdge, arrivalTimeToStop: moment.Moment) => {
-    let departureTime = moment(edge.departureTime, 'HH:mm');
-    let arrivalTime = moment(edge.arrivalTime, 'HH:mm');
+const g = (startNode: GraphNode, edge: GraphEdge) => {
+  let lineChangePenalty = 0;
 
-    if (departureTime.isBefore(arrivalTimeToStop)) {
-      departureTime.add(1, 'day');
-      arrivalTime.add(1, 'day');
-    }
+  try {
+    lineChangePenalty =
+      edge.lineName !== startNode?.cameUsing.lineName ? LINE_CHANGE_PENALTY : 0;
+  } catch (e) {
+    lineChangePenalty += LINE_CHANGE_PENALTY;
+  }
 
-    const timeThroughNode =
-      departureTime.diff(arrivalTimeToStop, 'minutes') +
-      arrivalTime.diff(departureTime, 'minutes');
-
-      let lineChangePenalty = 0;
-      try{
-        lineChangePenalty = edge.lineName !== startNode?.cameUsing.lineName ? LINE_CHANGE_PENALTY : 0;
-      }
-      catch(e){
-        lineChangePenalty += LINE_CHANGE_PENALTY;
-      }
-    
-
-  return timeThroughNode+lineChangePenalty;
+  return lineChangePenalty;
 };
 
 export const aStar = (
@@ -53,7 +39,6 @@ export const aStar = (
   initialDepartureTime: string
 ) => {
   const startMoment = moment();
-  let arrivalTimeToStop = moment(initialDepartureTime, 'HH:mm');
 
   const startNode: GraphNode = {
     ...start,
@@ -78,13 +63,6 @@ export const aStar = (
         wezel = wezel_testowy;
         koszt_wezla = cost;
       }
-    }
-
-    // here add minutes we spent on the edge
-    try {
-      arrivalTimeToStop.add(wezel.currentDuration || 0, 'minutes');
-    } catch (e) {
-      console.error('error', e);
     }
 
     if (wezel.stopId === endNode.stopId) {
@@ -123,22 +101,17 @@ export const aStar = (
       const wezel_nastepny = edge.endNode;
       if (!open.includes(wezel_nastepny) && !closed.includes(wezel_nastepny)) {
         open.push(wezel_nastepny);
-        wezel_nastepny.currentDuration = moment(edge.arrivalTime, 'HH:mm').diff(
-          moment(initialDepartureTime, 'HH:mm'),
-          'minutes'
-        );
+
+        wezel_nastepny.cameFrom = wezel;
+        wezel_nastepny.cameUsing = edge;
 
         wezel_nastepny.h = h(wezel, endNode);
-        wezel_nastepny.g = wezel.g + g(wezel, edge, arrivalTimeToStop);
+        wezel_nastepny.g = wezel.g + g(wezel, edge);
         wezel_nastepny.f = wezel_nastepny.g + wezel_nastepny.h;
       } else {
-        if (wezel_nastepny.g > wezel.g + g(wezel, edge, arrivalTimeToStop)) {
-          wezel_nastepny.g = wezel.g + g(wezel, edge, arrivalTimeToStop);
+        if (wezel_nastepny.g > wezel.g + g(wezel, edge)) {
+          wezel_nastepny.g = wezel.g + g(wezel, edge);
           wezel_nastepny.f = wezel_nastepny.g + wezel_nastepny.h;
-          wezel_nastepny.currentDuration = moment(
-            edge.arrivalTime,
-            'HH:mm'
-          ).diff(moment(initialDepartureTime, 'HH:mm'), 'minutes');
 
           wezel_nastepny.cameFrom = wezel;
           wezel_nastepny.cameUsing = edge;
@@ -150,8 +123,6 @@ export const aStar = (
         }
       }
     }
-
-    arrivalTimeToStop.subtract(wezel.currentDuration, 'minutes');
   }
 
   return {};
