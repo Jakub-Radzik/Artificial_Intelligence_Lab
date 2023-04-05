@@ -83,13 +83,17 @@ const main = async () => {
   // res.push(await run('Hala Stulecia', 'Jerzmanowska nr 9', '05:37', 't'));
   // res.push(await run('Hala Stulecia', 'Jerzmanowska nr 9', '05:37', 'p'));
 
-  // INIT
-  const start = 'Hala Stulecia';
-  const end = 'Jerzmanowska nr 9';
-  const time = '05:39';
-  const k = 'p';
+  res.push(await run('LEŚNICA', 'KSIĘŻE MAŁE', '07:30', 'd'));
+  res.push(await run('LEŚNICA', 'KSIĘŻE MAŁE', '07:30', 't'));
+  res.push(await run('LEŚNICA', 'KSIĘŻE MAŁE', '07:30', 'p'));
 
-  res.push(await run(start, end, time, k));
+  // INIT
+  // const start = 'Hala Stulecia';
+  // const end = 'Jerzmanowska nr 9';
+  // const time = '05:39';
+  // const k = 'p';
+
+  // res.push(await run(start, end, time, k));
 
   console.log(res);
 };
