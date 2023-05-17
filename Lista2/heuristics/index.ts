@@ -148,33 +148,41 @@ export const heuristics: Heuristics = {
     },
 
     /**
-     * Heurystyka ta zwraca ilość krążków gracza,
-     * które znajdują się w rogach planszy.
-     * Rogi planszy są bardzo ważne w grze w Reversi,
-     * ponieważ ruchy wykonywane w ich pobliżu dają
-     * dużo możliwości do zdobycia przewagi nad przeciwnikiem.
-     * Im więcej krążków gracza znajduje się w rogach planszy,
-     * tym lepiej oceniana jest jego pozycja na planszy.
+     * Heurystyka ta zwraca odleglosc od rogow planszy,
      * @param board
      * @param player
-     * @returns {number} Number of player's discs in corners
+     * @returns {number} Number of player's distance from corners
      */
-    countCorners: (board: ReversiBoard, player: number) => {
+    countCornerDistance: (board, player) => {
+      const width = board[0].length;
+      const height = board.length;
       const corners = [
         [0, 0],
-        [0, board.length - 1],
-        [board[0].length - 1, 0],
-        [board[0].length - 1, board.length - 1],
+        [0, height - 1],
+        [width - 1, 0],
+        [width - 1, height - 1],
       ];
-
-      let count = 0;
-      for (const [x, y] of corners) {
-        if (board[y][x] === player) {
-          count++;
+    
+      let score = 0;
+    
+      for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+          if (board[i][j] === player) {
+            // Oblicz odległość od najbliższego rogu
+            const distances = corners.map(([x, y]) => Math.abs(x - j) + Math.abs(y - i));
+            const minDistance = Math.min(...distances);
+    
+            // Dodaj punkty na podstawie odległości od rogu
+            if (minDistance === 0) {
+              score += 10; // Stabilne rogi mają wysoką wartość
+            } else {
+              score += 1 / minDistance; // Im bliżej rogu, tym wyższa wartość
+            }
+          }
         }
       }
-
-      return count;
-    },
+    
+      return score;
+    }
   },
 };
