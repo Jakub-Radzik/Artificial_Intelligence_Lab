@@ -15,11 +15,11 @@ export const heuristics: Heuristics = {
       let count2 = 0;
       for (let row of board) {
         for (let piece of row) {
-          if(piece === 1) count1++;
-          if(piece === 2) count2++;
+          if (piece === 1) count1++;
+          if (piece === 2) count2++;
         }
       }
-      return player === 1 ? count1-count2 : count2-count1; 
+      return player === 1 ? count1 - count2 : count2 - count1;
     },
 
     /**
@@ -162,16 +162,18 @@ export const heuristics: Heuristics = {
         [width - 1, 0],
         [width - 1, height - 1],
       ];
-    
+
       let score = 0;
-    
+
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
           if (board[i][j] === player) {
             // Oblicz odległość od najbliższego rogu
-            const distances = corners.map(([x, y]) => Math.abs(x - j) + Math.abs(y - i));
+            const distances = corners.map(
+              ([x, y]) => Math.abs(x - j) + Math.abs(y - i)
+            );
             const minDistance = Math.min(...distances);
-    
+
             // Dodaj punkty na podstawie odległości od rogu
             if (minDistance === 0) {
               score += 10; // Stabilne rogi mają wysoką wartość
@@ -181,8 +183,8 @@ export const heuristics: Heuristics = {
           }
         }
       }
-    
+
       return score;
-    }
+    },
   },
 };

@@ -4,7 +4,7 @@ export function isValidMove(
   board: ReversiBoard,
   player: number,
   row: number,
-  col: number,
+  col: number
 ): boolean {
   // Check if space is empty
   if (board[row][col] !== 0) return false;

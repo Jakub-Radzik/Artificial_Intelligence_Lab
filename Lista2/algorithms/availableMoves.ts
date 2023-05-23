@@ -9,7 +9,7 @@ function getAvailableMoves(
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board[i].length; j++) {
       if (board[i][j] === ReversiPlaceState.EMPTY) {
-        if (isValidMove(board,player, i, j)) {
+        if (isValidMove(board, player, i, j)) {
           moves.push([i, j]);
         }
       }
