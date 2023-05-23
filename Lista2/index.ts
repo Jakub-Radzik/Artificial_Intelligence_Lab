@@ -16,7 +16,15 @@ type MinimaxResult = {
 
 const main = async () => {
   const player1_heuristic = heuristics.player_1.countMyPieces;
-  const player2_heuristic = heuristics.player_1.countMyPieces;
+  const player2_heuristic = heuristics.player_2.countCornerDistance;
+
+  if(!player1_heuristic){
+    throw new Error("HEURISTIC PLAYER 1 NOT FOUND")
+  }
+  
+  if(!player2_heuristic){
+    throw new Error("HEURISTIC PLAYER 2 NOT FOUND")
+  }
 
   var invocations = 0;
   var time = 0; // ms
